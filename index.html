@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Genarate Random Groups</title>
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <meta name="author" content="M.N. Sadik">
+    <meta name="description" content="This amazing application will assist you in generating a random groups for your assignment or lab report or presentation.">
+
+    <!-- og meta tags -->
+
+    <meta name="og:title" content="Genarate Random Groups"/>
+    <meta name="og:url" content="http://diurandomgroups.netlify.app"/>
+    <meta name="og:image" content="/static/CardImg.jpg"/>
+    <meta name="og:site_name" content="Genarate Random Groups"/>
+    <meta name="og:description" content="This amazing application will assist you in generating a random groups for your assignment or lab report or presentation."/>
+
+    <!-- og meta tags -->
+
+    <meta name="twitter:title" content="Genarate Random Groups"/>
+    <meta name="twitter:url" content="http://diurandomgroups.netlify.app"/>
+    <meta name="twitter:image" content="/static/CardImg.jpg"/>
+    <meta name="twitter:site" content="@mnsadik"/>
+    <meta name= "twitter:card" content = "summary_large_image"/>
+    <meta name="twitter:description" content="This amazing application will assist you in generating a random groups for your assignment or lab report or presentation."/>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-container
+            class="d-flex flex-column justify-center align-center fill-height"
+            v-if="loggedin"
+          >
+            <v-card width="400" class="pa-4 rounded-xl">
+              <v-card-title
+                class="d-flex justify-center align-center text-h4 mb-4"
+                >Login Form</v-card-title
+              >
+              <v-card-text>
+                <v-form v-model="loginform">
+                  <v-row>
+                    <v-col cols="12" sm="12">
+                      <v-text-field
+                        label="Username"
+                        outlined
+                        rounded
+                        :rules="[rules.required, rules.username]"
+                        hide-details="auto"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12">
+                      <v-text-field
+                        label="Password"
+                        outlined
+                        rounded
+                        type="password"
+                        :rules="[rules.required, rules.password]"
+                        hide-details="auto"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-card-text>
+              <v-card-actions class="d-flex justify-center align-center">
+                <v-btn
+                  color="blue darken-1"
+                  outlined
+                  large
+                  rounded
+                  :disabled="!loginform"
+                  @click="loggedin=!loggedin"
+                >
+                  <span class="px-4">Login</span>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-container>
+          <v-container v-else>
+            <!-- <img src="static/DIU Logo.png" style="max-height: 60px;" alt="DIU Logo" class="mx-auto my-8"> -->
+            <v-img
+            contain
+  lazy-src="static/DIU Logo.png"
+  max-height="80"
+ src="static/DIU Logo.png" class="mt-8 mb-10"></v-img>
+            <v-expansion-panels multiple v-model="panel">
+              <v-expansion-panel :disabled="disabled">
+                <v-expansion-panel-header class="text-h4">
+                  Total Students : {{students.length}}
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <v-card elevation="0">
+                    <v-card-title>
+                        <v-row>
+                          <v-col cols="12" md="10" sm="6" xs="12">
+                            <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Search"
+                        rounded
+                        outlined
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                          </v-col>
+                          <v-col cols="12" md="2" sm="6" xs="12">
+                            <v-dialog v-model="dialog" max-width="500px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            depressed
+                            x-large
+                            rounded
+                            block
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            <h4>Add New</h4>
+                          </v-btn>
+                        </template>
+                        <v-card class="rounded-xl">
+                          <v-card-title>
+                            <span class="text-h5 ml-4 my-4"
+                              >{{ formTitle }}</span
+                            >
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container>
+                              <v-form v-model="valid">
+                                <v-row>
+                                  <v-col cols="12" sm="12">
+                                    <v-text-field
+                                      v-model="editedItem.name"
+                                      label="Full Name"
+                                      outlined
+                                      rounded
+                                      :rules="[rules.required, rules.counter]"
+                                      hide-details="auto"
+                                    ></v-text-field>
+                                  </v-col>
+                                  <v-col cols="12" sm="12">
+                                    <v-text-field
+                                      v-model="editedItem.id"
+                                      label="DIU Id"
+                                      placeholder="xxx-xx-xxxx"
+                                      outlined
+                                      rounded
+                                      :rules="[rules.required, rules.id]"
+                                      hide-details="auto"
+                                    ></v-text-field>
+                                  </v-col>
+                                </v-row>
+                              </v-form>
+                            </v-container>
+                          </v-card-text>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <div class="mb-4 mr-4">
+                              <v-btn
+                                color="red darken-1"
+                                text
+                                rounded
+                                @click="close"
+                              >
+                                Cancel
+                              </v-btn>
+                              <v-btn
+                                color="blue darken-1"
+                                text
+                                rounded
+                                :disabled="!valid"
+                                @click="save"
+                              >
+                                Save
+                              </v-btn>
+                            </div>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                          </v-col>
+                        </v-row>
+                      
+                      
+                      <v-dialog v-model="dialogDelete" max-width="500px">
+                        <v-card class="rounded-xl">
+                          <v-card-title class="text-h5"
+                            >Are you sure you want to delete this
+                            item?</v-card-title
+                          >
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                              color="blue darken-1"
+                              text
+                              rounded
+                              @click="closeDelete"
+                              >Cancel</v-btn
+                            >
+                            <v-btn
+                              color="red darken-1"
+                              text
+                              rounded
+                              @click="deleteItemConfirm"
+                              >OK</v-btn
+                            >
+                            <v-spacer></v-spacer>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-data-table
+                      v-model="selected"
+                        :headers="headers"
+                        :items="students"
+                        :search="search"
+                        :items-per-page="5"
+                        show-select
+                      >
+                        <template v-slot:item.actions="{ item }">
+                          <v-icon small class="mr-2" @click="editItem(item)">
+                            mdi-pencil
+                          </v-icon>
+                          <v-icon small @click="deleteItem(item)">
+                            mdi-delete
+                          </v-icon>
+                        </template>
+                      </v-data-table>
+                    </v-card-text>
+                  </v-card>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+              <v-expansion-panel>
+                <v-expansion-panel-header class="text-h4">
+                  Genarate Random Groups
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <v-card elevation="0">
+                    <v-card-title class="d-flex">
+                      <v-form v-model="membersform">
+                        <v-row>
+                          <v-col cols="12" md="10" sm="6" xs="12">
+                            <v-text-field
+                        v-model="members"
+                        label="Number of Members"
+                        rounded
+                        outlined
+                        :readonly="disabled"
+                        :rules="[rules.required, rules.member]"
+                        hint="Choose a number less than total students."
+                        hide-details="auto"
+                      ></v-text-field>
+                          </v-col>
+                          <v-col cols="12" md="2" sm="6" xs="12">
+                        <v-btn
+                        depressed
+                        x-large
+                        rounded
+                        block
+                        :disabled="!membersform"
+                        @click="randomize()"
+                        >
+                        <h4>Randomize</h4>
+                        </v-btn
+                      >
+                          </v-col>
+                        </v-row>
+                      </v-form>
+                    </v-card-title>
+                    <v-card-text>
+                      
+                      <div v-for="(item,index) in allGropus" class="my-4">
+                        <h4 class="text-h4 my-2">Group : {{index+1}}</h3>
+                        <h5 v-for="(student,idno) in item" class="text-h5">
+                          {{student.name}}
+                          <span class="text-subtitle-1">{{student.id}}</span>
+                        </h5>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                  <!-- Total Groups : {{extra ? groups+1: groups}}  -->
+                  <v-card-actions
+                    v-if="extra">{{extra ? `Extra Members :
+                    ${extra} (Group-1)`:''}}</v-card-actions
+                  >
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-container>
+        </v-main>
+        <v-footer absolute app class="text-body-2 d-print-none">
+    <v-container class="d-flex justify-space-between pa-0">
+      <span
+        >&reg;
+        <a
+          class="text-decoration-none"
+          href="https://mnsadik.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          >M.N. Sadik</a>
+        </span
+      >
+      <span>Join with us <a
+          class="text-decoration-none"
+          href="https://discord.gg/wes7CZ2zVw"
+          target="_blank"
+          rel="noopener noreferrer"
+          >@Discord</a
+        ></span>
+      <span>
+        <!-- {{ new Date().getFullYear() }} -->
+        &copy;2022</span
+      >
+    </v-container>
+  </v-footer>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script>
+      new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data: () => ({
+          disabled: false,
+          panel: [1],
+          dialog: false,
+          dialogDelete: false,
+          editedIndex: -1,
+          editedItem: {
+            name: "",
+            id: "",
+          },
+          defaultItem: {
+            name: "",
+            id: "",
+          },
+          loginform: false,
+          loggedin: true,
+          valid: false,
+          rules: {
+            required: (value) => !!value || "Required.",
+            counter: (value) => value.length >= 4 || "Minimum 4 character.",
+            id: (value) =>
+              /^\d{3}[^\s\da-zA-Z]\d{2}[^\s\da-zA-Z]\d{4}$/g.test(value) ||
+              "Id No. must be valid",
+            username: (value) => value === "mnsadik" || "Invalid username.",
+            password: (value) => value === "diu-cse-22" || "Invalid password.",
+            member: (value) =>
+              /^\d{1,2}$/g.test(value) ||
+              "Choose a number less than total students.",
+          },
+          selected: [],
+          headers: [
+            {
+              text: "Name",
+              align: "start",
+              sortable: false,
+              value: "name",
+            },
+            { text: "DIU Id", value: "id" },
+            {
+              text: "Actions",
+              value: "actions",
+              align: "end",
+              sortable: false,
+            },
+          ],
+          search: "",
+          members: null,
+          membersform: false,
+          groups: null,
+          extra: null,
+          students: [
+            { name: "Md. Tahmid", id: "221-15-5951" },
+            { name: "Md. Tahrin Jahan Emon", id: "221-15-6044" },
+            { name: "Md. Rakib Shahriar", id: "221-15-5377" },
+            { name: "Soriful Islam", id: "221-15-4729" },
+            { name: "Md. Jannatul Naeem Rifat", id: "221-15-5354" },
+            { name: "Kishon Kumar Pashi", id: "221-15-5391" },
+            { name: "Kazi Md Nuruzzaman", id: "221-15-5977" },
+            { name: "Abu Kawser", id: "221-15-5627" },
+            { name: "Saif Mahmud", id: "221-15-5367" },
+            { name: "Md. Rasel Sarker", id: "221-15-5663" },
+            { name: "Md. Abdus Salam", id: "221-15-5690" },
+            { name: "Mritunjay Mohonta", id: "221-15-5752" },
+            { name: "Anik Hussain", id: "221-15-5363" },
+            { name: "Mir Md. Arman", id: "221-15-6022" },
+            { name: "Md. Jubayer Islam Tasin", id: "221-15-5885" },
+            { name: "Arif Billa", id: "221-15-5771" },
+            { name: "Md. Kamruzzaman", id: "221-15-5629" },
+            { name: "Shakil Mia", id: "221-15-5595" },
+            { name: "Mili Khatun", id: "221-15-6057" },
+            { name: "Shahanaj Sadia", id: "221-15-6008" },
+            { name: "Jobayer Ahmad", id: "221-15-5469" },
+            { name: "Md. Sazzad Hossain", id: "221-15-5824" },
+          ],
+          allGropus: [],
+        }),
+        computed: {
+          formTitle() {
+            return this.editedIndex === -1 ? "Add a new student" : "Edit Item";
+          },
+          // memberRule(){
+          //   const rules= []
+          //   if(this.members == null || this.members == ""){
+          //     rules.push("Required.")
+          //   }
+          //   if(this.members>this.students.length || this.members<1){
+          //     rules.push(`Choose a number between (1-${this.students.length})`)
+          //   }
+          //   return rules
+          // }
+        },
+        watch: {
+          dialog(val) {
+            val || this.close();
+          },
+          dialogDelete(val) {
+            val || this.closeDelete();
+          },
+        },
+        methods: {
+          editItem(item) {
+            this.editedIndex = this.students.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialog = true;
+          },
+
+          deleteItem(item) {
+            this.editedIndex = this.students.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialogDelete = true;
+          },
+
+          deleteItemConfirm() {
+            this.students.splice(this.editedIndex, 1);
+            this.closeDelete();
+          },
+
+          close() {
+            this.dialog = false;
+            this.$nextTick(() => {
+              this.editedItem = Object.assign({}, this.defaultItem);
+              this.editedIndex = -1;
+            });
+          },
+
+          closeDelete() {
+            this.dialogDelete = false;
+            this.$nextTick(() => {
+              this.editedItem = Object.assign({}, this.defaultItem);
+              this.editedIndex = -1;
+            });
+          },
+
+          save() {
+            if (this.editedIndex > -1) {
+              Object.assign(this.students[this.editedIndex], this.editedItem);
+            } else {
+              this.students.push(this.editedItem);
+            }
+            this.close();
+          },
+
+          randomize() {
+            var members = this.members;
+            var extraMember = this.students.length % members;
+            this.extra = extraMember;
+            var groups = (this.students.length - extraMember) / members;
+            this.groups = groups;
+            var RandomStudents = [];
+            var allGropus = [];
+
+            // for (let i in this.students) {
+            //   let index = Math.floor(Math.random() * this.students.length);
+            //   if (RandomStudents.includes(this.students[index])) {
+            //     index = Math.floor(Math.random() * this.students.length);
+            //   }
+            //   RandomStudents[i] = this.students[index];
+            // }
+
+            while (this.students.length !== 0) {
+              let index = Math.floor(Math.random() * this.students.length);
+              RandomStudents.push(this.students[index]);
+              this.students.splice(index, 1);
+            }
+            this.students = RandomStudents;
+
+            if (extraMember != 0) {
+              allGropus.push(RandomStudents.splice(0, extraMember));
+              for (let j = 0; j < groups; j++) {
+                allGropus.push(RandomStudents.splice(0, members));
+              }
+            } else {
+              for (let j = 0; j < groups; j++) {
+                allGropus.push(RandomStudents.splice(0, members));
+              }
+            }
+            this.allGropus = allGropus;
+            this.disabled = !this.disabled
+            this.membersform = !this.membersform
+            // this.memberRule = []
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -287,7 +287,7 @@
                               outlined
                               :readonly="disabled"
                               :rules="[rules.required, rules.member]"
-                              hint="Choose a number less than total students."
+                              :hint="`Choose a number between 1 to ${students.length}`"
                               hide-details="auto"
                             ></v-text-field>
                           </v-col>
@@ -447,8 +447,8 @@
             username: (value) => value === "mnsadik" || "Invalid username.",
             password: (value) => value === "diu-cse-22" || "Invalid password.",
             member: (value) =>
-              (/^\d{1,2}$/g.test(value) && value <= studentList.length) ||
-              "Choose a number less than total students.",
+              (value <= studentList.length && value >= 1) ||
+              `The number must be between 1 to ${studentList.length}`,
           },
           selected: [],
           headers: [
